@@ -40,14 +40,17 @@ namespace ComPortTest
 
             // Instatiate this class
             new Thread(() => { sendingSignal(); }).Start();
+
+
+
             //readPort.Encoding = Encoding.ASCII;
             //readPort.Open();
             //readPort.DataReceived += (s, e) =>
             //{
             //    var buffer = new byte[1];
-            //    var g = readPort.Read(buffer,0, 1);
+            //    var g = readPort.Read(buffer, 0, 1);
 
-            //    Console.WriteLine("Read: " +buffer[0]);
+            //    Console.WriteLine("Read: " + buffer[0]);
             //};
 
             Console.ReadLine();
@@ -65,9 +68,10 @@ namespace ComPortTest
 
                     Console.WriteLine("Sending " + count);
 
-                    sendPort.Write(count.ToString());
-                    //byte[] buffer = new byte[] { Convert.ToByte(count) };
-                    //sendPort.Write(buffer, 0, 1);
+                    //write 0 first
+                    sendPort.Write(new byte[] { Byte.Parse("0") }, 0, 1);
+                    byte[] buffer = new byte[] { Convert.ToByte(count) };
+                    sendPort.Write(buffer, 0, 1);
                 }
                 catch (Exception ex)
                 {
