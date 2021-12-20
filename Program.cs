@@ -13,7 +13,10 @@ namespace ComPortTest
         // Create the serial port with basic settings
         private static SerialPort sendPort;       // Create the serial port with basic settings
         private static SerialPort readPort = new SerialPort("COM4",
-          57600, Parity.None, 8, StopBits.One);
+          57600, Parity.None, 8, StopBits.One)
+        {
+            Encoding = Encoding.ASCII
+        };
 
         [STAThread]
         static void Main(string[] args)
@@ -30,26 +33,41 @@ namespace ComPortTest
             var portName = portList[int.Parse(portId)];
             Console.WriteLine("Select port: " + portName);
             sendPort = new SerialPort(portName,
-          57600, Parity.None, 8, StopBits.One);
+          57600, Parity.None, 8, StopBits.One)
+            { Encoding = Encoding.ASCII };
             sendPort.WriteTimeout = 1000;
 
 
             // Instatiate this class
             new Thread(() => { sendingSignal(); }).Start();
+            //readPort.Encoding = Encoding.ASCII;
+            //readPort.Open();
+            //readPort.DataReceived += (s, e) =>
+            //{
+            //    var buffer = new byte[1];
+            //    var g = readPort.Read(buffer,0, 1);
 
+            //    Console.WriteLine("Read: " +buffer[0]);
+            //};
 
             Console.ReadLine();
         }
 
         static void sendingSignal()
         {
+            int count = 0;
+
             sendPort.Open();
             while (true)
             {
                 try
                 {
-                    Console.WriteLine("Sending 11-111-UL");
-                    sendPort.WriteLine("11-111-UL");
+
+                    Console.WriteLine("Sending " + count);
+
+                    sendPort.Write(count.ToString());
+                    //byte[] buffer = new byte[] { Convert.ToByte(count) };
+                    //sendPort.Write(buffer, 0, 1);
                 }
                 catch (Exception ex)
                 {
@@ -59,6 +77,8 @@ namespace ComPortTest
                 }
                 finally
                 {
+                    count++;
+
                     Thread.Sleep(1000);
                 }
             }
